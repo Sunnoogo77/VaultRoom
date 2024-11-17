@@ -31,11 +31,14 @@ Ce projet a été créé pour explorer les fondamentaux de la cybersécurité, n
 ## 📂 Organisation du Dépôt  
 
 ```plaintext
-SecureCommHub/
-│
-├── Backend/       -> Scripts pour la logique du serveur.
-├── Frontend/      -> Interface utilisateur pour le chat et le partage.
-├── Tests/         -> Scripts pour valider les fonctionnalités.
-├── Docs/          -> Documentation et guide utilisateur.
-└── README.md      -> Présentation du projet.
+VaultRoom/
+├── Preparations/
+│   ├── DNS_Config/
+│   ├── Firewall_Rules/
+│   ├── TLS_Security/
+│   └── README.md
+├── Backend/
+├── Frontend/
+└── README.md
+
 
