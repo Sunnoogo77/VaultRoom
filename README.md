@@ -1,7 +1,7 @@
 # VaultRoom : Une Solution Sécurisée pour Échanges et Partages 🔐  
 
 ## 🛠️ Objectif du Projet  
-**SecureCommHub** est une plateforme de communication et de partage sécurisée, conçue pour garantir la confidentialité des échanges entre utilisateurs. Ce projet met en œuvre des concepts fondamentaux de cybersécurité pour offrir une solution pratique et robuste.  
+**VaultRoom** est une plateforme de communication et de partage sécurisée, conçue pour garantir la confidentialité des échanges entre utilisateurs. Ce projet met en œuvre des concepts fondamentaux de cybersécurité pour offrir une solution pratique et robuste.  
 
 ---
 
