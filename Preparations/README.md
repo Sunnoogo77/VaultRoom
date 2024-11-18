@@ -1,40 +1,41 @@
-# Preparations : Étapes Techniques pour SecureCommHub  
+# VaultRoom : Préparations Techniques pour le Déploiement 🔧  
 
 ## 🎯 Objectif  
-Ce dossier regroupe les étapes techniques nécessaires à la mise en place du projet **SecureCommHub**. Ces préparations incluent la configuration réseau, les règles de sécurité, et la sécurisation des communications par TLS/SSL.  
-
-Ces travaux ont permis de poser les bases solides pour développer une plateforme sécurisée et fonctionnelle.  
+Le dossier `Preparations` contient toutes les configurations techniques nécessaires pour préparer un environnement sécurisé et fonctionnel pour le projet VaultRoom. Ces étapes sont cruciales pour garantir une infrastructure réseau robuste, une communication protégée, et une base solide pour les fonctionnalités principales.  
 
 ---
 
 ## 📂 Contenu  
 
 1. **DNS_Config/**  
-   - Cette étape explore la configuration DNS/DHCP.  
-   - Objectif : Permettre une résolution de noms efficace et une attribution automatique des adresses IP.  
+   - Configuration d’un serveur DNS pour résoudre `vaultroom.local`.  
+   - Scripts pour Bind9 et fichiers de zone.  
 
-2. **Firewall_Rules/**  
-   - Cette étape détaille les règles de pare-feu configurées pour sécuriser les communications.  
-   - Objectif : Filtrer les connexions entrantes et sortantes pour limiter les accès non autorisés.  
+2. **DHCP_Config/**  
+   - Configuration d’un serveur DHCP pour l’attribution automatique des adresses IP.  
+   - Scripts pour isc-dhcp-server et configuration réseau.  
 
-3. **TLS_Security/**  
-   - Cette étape met en place le chiffrement TLS/SSL pour sécuriser les communications.  
-   - Objectif : Garantir la confidentialité, l’intégrité, et l’authenticité des messages échangés.  
+3. **Firewall_Rules/**  
+   - Règles de pare-feu pour restreindre les accès non autorisés.  
+   - Scripts pour UFW/iptables et exemples de logs.  
 
----
-
-## 🚀 Utilité pour le Projet Principal  
-
-Les étapes décrites ici sont directement liées à la conception de **SecureCommHub**. Elles fournissent :  
-- Une infrastructure réseau stable et sécurisée.  
-- Un système de communication protégé contre les attaques (écoute, usurpation).  
-- Une base solide pour intégrer des fonctionnalités avancées (authentification, journalisation).  
+4. **TLS_Security/**  
+   - Configuration des certificats TLS/SSL pour sécuriser les communications.  
+   - Scripts pour générer et gérer les certificats.  
 
 ---
 
-## 📖 Notes et Instructions  
+## 🚀 Lien avec VaultRoom  
 
-- Chaque sous-dossier contient un fichier `README.md` avec des explications détaillées.  
-- Ces étapes sont conçues pour être éducatives et pratiques.  
-- N’hésitez pas à explorer les captures, scripts, et exemples pour mieux comprendre leur utilité.  
+Ces préparations techniques permettent de :  
+- Créer un environnement réseau isolé et sécurisé.  
+- Gérer la communication entre le serveur et les clients VaultRoom via DNS et DHCP.  
+- Protéger les échanges avec TLS/SSL.  
+- Renforcer la sécurité grâce aux pare-feu.  
 
+---
+
+## 📖 Notes  
+
+- Consultez les sous-dossiers pour des explications détaillées et des fichiers prêts à l’emploi.  
+- Cette section est optionnelle pour les déploiements simples mais essentielle pour des environnements professionnels ou locaux.  
