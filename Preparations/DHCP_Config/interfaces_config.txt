@@ -1,1 +1,8 @@
+auto lo
+iface lo inet loopback
+
+auto ens36
+iface ens36 inet static
+	address 192.168.1.2
+	netmask 255.255.255.0
 
