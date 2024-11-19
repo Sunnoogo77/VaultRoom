@@ -1,1 +1,7 @@
+zone "vaultroom.local" {
+    type master;
+    file "/etc/bind/zones/db.vaultroom.local";
+};
+
+
 
