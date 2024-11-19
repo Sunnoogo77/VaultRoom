@@ -68,9 +68,16 @@ sudo systemctl restart bind9
 ## 📂 Fichiers Inclus  
 
 1. `dns_zone_config.txt` : Contenu du fichier `/etc/bind/zones/db.vaultroom.local`.  
-2. `bind9_config.txt` : Modifications apportées à `/etc/bind/named.conf.local`.  
+2. `bind9_config.txt` : Modifications apportées à `/etc/bind/named.conf.local`.
+   
+---
+
+## 🚀 Lien avec le Projet Principal  
+
+Cette configuration réseau garantit que les différentes machines et composants du projet **SecureCommHub** peuvent communiquer efficacement. Elle pose les bases pour une communication fiable entre le serveur et les clients.  
 
 ---
+
 
 ## 📖 Notes  
 - Assurez-vous que le serveur DNS est accessible via l’adresse IP `192.168.1.2`.  
