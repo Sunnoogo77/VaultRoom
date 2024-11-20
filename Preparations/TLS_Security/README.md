@@ -24,5 +24,4 @@ sudo openssl req -new -x509 -key vaultroom.key -out vaultroom.crt -days 365
 ---
 
 ## 📖 Notes  
-- Les certificats auto-signés ne sont pas recommandés en production. Pour un déploiement réel, utilisez un certificat signé par une autorité de certification (CA).  
-```
+- Les certificats auto-signés ne sont pas recommandés en production. Pour un déploiement réel, utilisez un certificat signé par une autorité de certification (CA).
