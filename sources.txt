@@ -1,1 +1,3 @@
 https://www.youtube.com/watch?v=3QiPPX-KeSc&t=1759s  ===> Python Socket Programming Tutorial
+
+https://www.youtube.com/watch?v=okJdxTZQWnA          ===> Le protocole du SSL/TLS pour débutant (+ analyse avec wireshark)
