@@ -32,7 +32,6 @@ Ajoutez ou modifiez `/etc/network/interfaces` pour configurer une adresse statiq
 iface ens36 inet static
     address 192.168.1.2
     netmask 255.255.255.0
-    gateway 192.168.1.1
 ```
 
 ### 4. Redémarrer le Serveur DHCP  
