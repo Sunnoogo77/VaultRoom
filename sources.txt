@@ -5,3 +5,8 @@ https://www.youtube.com/watch?v=okJdxTZQWnA          ===> Le protocole du SSL/TL
 https://www.youtube.com/watch?v=7W7WPMX7arI          ===> Comprendre le chiffrement SSL / TLS avec des emojis (et le HTTPS)
 
 https://www.youtube.com/watch?v=WIMKeyJ60Rw&t=210s   ===> Comprendre HTTPS et le chiffrement SSL TLS en animation 3D
+
+https://www.youtube.com/watch?v=-dHbXLR-Mao&t=88s    ===> Qu'est ce qu'un certificat SSL/TLS ? | Cryptographie, PKI, Openssl
+
+https://www.youtube.com/watch?v=hBAPIy9vF0E          ===>  TuTo -- Socket Sécurisé (SSL/TLS) -- BiMathAx
+ 
