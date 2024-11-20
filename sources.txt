@@ -3,3 +3,5 @@ https://www.youtube.com/watch?v=3QiPPX-KeSc&t=1759s  ===> Python Socket Programm
 https://www.youtube.com/watch?v=okJdxTZQWnA          ===> Le protocole du SSL/TLS pour débutant (+ analyse avec wireshark)
 
 https://www.youtube.com/watch?v=7W7WPMX7arI          ===> Comprendre le chiffrement SSL / TLS avec des emojis (et le HTTPS)
+
+https://www.youtube.com/watch?v=WIMKeyJ60Rw&t=210s   ===> Comprendre HTTPS et le chiffrement SSL TLS en animation 3D
