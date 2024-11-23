@@ -11,3 +11,5 @@ https://www.youtube.com/watch?v=-dHbXLR-Mao&t=88s    ===> Qu'est ce qu'un certif
 https://www.youtube.com/watch?v=hBAPIy9vF0E          ===>  TuTo -- Socket Sécurisé (SSL/TLS) -- BiMathAx
  
 =https://www.youtube.com/watch?v=1BfCnjr_Vjg         ==>  WebSockets in 100 Seconds & Beyond with Socket.io
+
+https://www.youtube.com/watch?v=L8CFvsgd-1A          ==>   TuTo -- Messagerie en Python (Socket & Thread) -- BiMathAx
