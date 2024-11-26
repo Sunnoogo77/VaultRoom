@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <h3>Inscription</h3>
+  <form method="post" action="/register" enctype="application/json" class="form">
+    <div>
+      <label>Nom d'utilisateur :</label>
+      <input type="text" name="username" placeholder="Choisissez un nom" required />
+    </div>
+    <div>
+      <label>Email :</label>
+      <input type="email" name="email" placeholder="Entrez votre email" required />
+    </div>
+    <div>
+      <label>Mot de passe :</label>
+      <input type="password" name="password" placeholder="Choisissez un mot de passe" required />
+    </div>
+    <button type="submit">Créer un Compte</button>
+  </form>
+</div>
+{% endblock %}
