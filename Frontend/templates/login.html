@@ -2,16 +2,40 @@
 {% block content %}
 <div class="container">
   <h3>Connexion</h3>
-  <form method="post" action="/login" enctype="application/json" class="form">
+  <form method="post" action="/login" enctype="application/json" id="login-form" class="form">
     <div>
       <label>Nom d'utilisateur :</label>
-      <input type="text" name="username" placeholder="Entrez votre nom" required />
+      <input type="text" name="username" placeholder="Entrez votre nom d'utilisateur" required />
     </div>
     <div>
       <label>Mot de passe :</label>
       <input type="password" name="password" placeholder="Entrez votre mot de passe" required />
     </div>
-    <button type="submit">Se Connecter</button>
+    <button type="submit" id="login-btn">Se Connecter</button>
   </form>
 </div>
+
+
+<script>
+  document.getElementById("login-btn").addEventListener("click", async () => {
+    const formData = new FormData(document.getElementById("login-form"));
+    const data = Object.fromEntries(formData);
+    try {
+      const response = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message);
+      } else {
+        document.getElementById("login-error").innerText = result.error;
+      }
+    } catch (err) {
+      document.getElementById("login-error").innerText = "Erreur de connexion.";
+    }
+  });
+  </script>
+  
 {% endblock %}
