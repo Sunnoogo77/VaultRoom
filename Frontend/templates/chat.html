@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="chat-container">
+  <h2>Discussion avec {{ recipient.username }}</h2>
+
+  <!-- Zone des messages -->
+  <div class="message-box" id="messages">
+    <!-- Les messages seront chargés dynamiquement -->
+  </div>
+
+  <!-- Champ pour envoyer un message -->
+  <form method="post" action="/send-message" class="message-form">
+    <input type="hidden" name="recipient_id" value="{{ recipient.id }}">
+    <textarea name="message" placeholder="Écrivez votre message ici..." required></textarea>
+    <button type="submit">Envoyer</button>
+  </form>
+</div>
+
+<script>
+  const messageBox = document.getElementById("messages");
+  const recipientId = "{{ recipient.id }}";
+
+  // Charger les messages
+  const loadMessages = async () => {
+    const response = await fetch(`/get-messages?receiver_id=${recipientId}`);
+    if (response.ok) {
+      const messages = await response.json();
+      messageBox.innerHTML = '';
+      messages.forEach(msg => {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message', msg.sender === 'Moi' ? 'sent' : 'received');
+        messageDiv.innerHTML = `
+          <p class="content"><strong>${msg.sender}</strong>: ${msg.content}</p>
+          <span class="timestamp">${msg.timestamp}</span>
+        `;
+        messageBox.appendChild(messageDiv);
+      });
+      messageBox.scrollTop = messageBox.scrollHeight;
+    }
+  };
+
+  // Envoi de message via AJAX
+  document.querySelector('.message-form').onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const response = await fetch(e.target.action, { method: 'POST', body: formData });
+    if (response.ok) {
+      await loadMessages();
+      e.target.reset();
+    } else {
+      console.error('Erreur lors de l\'envoi du message.');
+    }
+  };
+
+  // Charger les messages initialement
+  loadMessages();
+</script>
+{% endblock %}
+
