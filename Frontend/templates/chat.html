@@ -16,44 +16,41 @@
   </form>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
 <script>
-  const messageBox = document.getElementById("messages");
-  const recipientId = "{{ recipient.id }}";
+  const socket = io.connect();
 
-  // Charger les messages
-  const loadMessages = async () => {
-    const response = await fetch(`/get-messages?receiver_id=${recipientId}`);
-    if (response.ok) {
-      const messages = await response.json();
-      messageBox.innerHTML = '';
-      messages.forEach(msg => {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('message', msg.sender === 'Moi' ? 'sent' : 'received');
-        messageDiv.innerHTML = `
-          <p class="content"><strong>${msg.sender}</strong>: ${msg.content}</p>
-          <span class="timestamp">${msg.timestamp}</span>
-        `;
-        messageBox.appendChild(messageDiv);
-      });
-      messageBox.scrollTop = messageBox.scrollHeight;
-    }
-  };
+  // Rejoindre la room pour recevoir des messages
+  socket.emit('join_chat', { user_id: {{ user.id }} });
 
-  // Envoi de message via AJAX
-  document.querySelector('.message-form').onsubmit = async (e) => {
+  // Écouter les messages reçus
+  socket.on('receive_message', (data) => {
+    const messageBox = document.getElementById('messages');
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('message', 'received');
+    messageDiv.innerHTML = `
+      <p class="content">
+        <strong>${data.sender}</strong>: ${data.content}
+      </p>
+      <span class="timestamp">${data.timestamp}</span>
+    `;
+    messageBox.appendChild(messageDiv);
+    messageBox.scrollTop = messageBox.scrollHeight;
+  });
+
+  // Envoyer un message
+  const form = document.querySelector(".message-form");
+  form.onsubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const response = await fetch(e.target.action, { method: 'POST', body: formData });
-    if (response.ok) {
-      await loadMessages();
-      e.target.reset();
-    } else {
-      console.error('Erreur lors de l\'envoi du message.');
-    }
-  };
+    const formData = new FormData(form);
+    const message = formData.get('message');
+    const recipient_id = formData.get('recipient_id');
 
-  // Charger les messages initialement
-  loadMessages();
+    socket.emit('send_message', { message, recipient_id });
+    form.reset();
+  };
 </script>
+
+
 {% endblock %}
 
