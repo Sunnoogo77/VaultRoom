@@ -1,7 +1,11 @@
-from flask import Flask
+from flask import Flask, session
+from flask_socketio import SocketIO
 from extensions import db, bcrypt
 from routes import main
+from socketio_instance import socketio
 import os
+
+socketio = SocketIO()  # Initialisation de SocketIO
 
 def create_app():
     #app = Flask(__name__)
@@ -14,9 +18,13 @@ def create_app():
     #app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///db.sqlite3"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+    # Clé secrète pour sécuriser les sessions
+    app.secret_key = "votre_clé_secrète_super_secure_ici"
+
     # Initialiser les extensions
     db.init_app(app)
     bcrypt.init_app(app)
+    socketio.init_app(app)  # Attacher SocketIO à Flask
 
     # Enregistrer les routes
     app.register_blueprint(main)
@@ -29,6 +37,6 @@ if __name__ == "__main__":
     app = create_app()
     with app.app_context():
         db.create_all()
-    app.run(host="0.0.0.0", debug=True)
+    socketio.run(app, debug=True)  # Utilisation de socketio.run au lieu de app.run
     print("Tables créées avec succès.")
 
