@@ -6,7 +6,7 @@ from socketio_instance import socketio
 import os
 
 socketio = SocketIO()  # Initialisation de SocketIO
-
+#++
 def create_app():
     #app = Flask(__name__)
     app = Flask(__name__,
