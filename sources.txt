@@ -14,6 +14,8 @@ https://www.youtube.com/watch?v=hBAPIy9vF0E          ===>  TuTo -- Socket Sécur
 
 https://www.youtube.com/watch?v=L8CFvsgd-1A          ==>   TuTo -- Messagerie en Python (Socket & Thread) -- BiMathAx
 
+https://www.youtube.com/watch?v=mkXdvs8H7TA          ==> Python Live Chat Room Tutorial Using Flask & SocketIO
+
 https://youtube.com/playlist?list=PLWnON6N0wn-FXZ0ECb9iSAZwWoeGr1rUp&si=sLbEYgHitFntgLEM  ==>  Python GUI Chat Application
 
 Just for commit
