@@ -10,7 +10,7 @@
 
   <!-- Champ pour envoyer un message -->
   <form id="message-form">
-    <input type="hidden" id="recipient_id" value="{{ recipient.id }}">
+    <input type="hidden" iname="recipient_id" value="{{ recipient.id }}">
     <textarea id="message-input" placeholder="Écrivez votre message ici..." required></textarea>
     <button type="submit">Envoyer</button>
   </form>
@@ -24,23 +24,75 @@
 
     // Charger les anciens messages
     fetch(`/get-messages?receiver_id=${recipient_id}`)
-      .then(response => response.json())
-      .then(messages => {
+    .then(response => response.json())
+    .then(messages => {
+        if (!Array.isArray(messages)) {
+            console.error("Erreur lors du chargement des messages: La réponse n'est pas un tableau", messages);
+            return;
+        }
+
+        const messageBox = document.getElementById("messages");
         messages.forEach(msg => {
-          const messageDiv = document.createElement('div');
-          messageDiv.classList.add('message', msg.sender === 'Moi' ? 'sent' : 'received');
-          messageDiv.innerHTML = `
-            <p class="content">
-              <strong>${msg.sender}</strong>: ${msg.content}
-            </p>
-            <span class="timestamp">${msg.timestamp}</span>
-          `;
-          messageBox.appendChild(messageDiv);
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", msg.sender === "Moi" ? "sent" : "received");
+            messageDiv.innerHTML = `
+                <p class="content">
+                    <strong>${msg.sender}</strong>: ${msg.content}
+                </p>
+                <span class="timestamp">${msg.timestamp}</span>
+            `;
+            messageBox.appendChild(messageDiv);
         });
-        messageBox.scrollTop = messageBox.scrollHeight; // Scroll to the bottom
-      })
-      .catch(err => console.error('Erreur lors du chargement des messages:', err));
+
+        // Scroller vers le bas
+        messageBox.scrollTop = messageBox.scrollHeight;
+    })
+    .catch(error => {
+        console.error("Erreur lors du chargement des messages:", error);
+    });
+  });
+
+  const socket = io.connect();
+
+  // Fonction pour envoyer un message
+  const form = document.querySelector(".message-form");
+  form.onsubmit = (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const message = formData.get('message-input');
+    const recipient_id = formData.get('recipient_id');
+
+    // Émettre l'événement 'send_message'
+    socket.emit('send_message', { message, recipient_id });
+
+    // Écouter la confirmation
+    socket.on('message_sent', (data) => {
+      if (data.status === 'success') {
+        console.log("Message envoyé avec succès.");
+      }
+    });
+
+    // Gérer les erreurs
+    socket.on('error', (error) => {
+      console.error("Erreur lors de l'envoi : ", error.error);
+    });
+
+    // Réinitialiser le formulaire
+    form.reset();
+  };
+
+  // Écouter les messages reçus
+  socket.on('receive_message', (data) => {
+    const messageBox = document.getElementById("messages");
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("message", "received");
+    messageDiv.innerHTML = `
+      <p><strong>${data.sender}</strong>: ${data.content}</p>
+      <span class="timestamp">${data.timestamp}</span>
+    `;
+    messageBox.appendChild(messageDiv);
+    messageBox.scrollTop = messageBox.scrollHeight;
   });
 </script>
-
 {% endblock %}
