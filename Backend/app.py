@@ -33,10 +33,33 @@ def create_app():
 
 
 
+from flask_migrate import Migrate
+
+migrate = Migrate()
+
+
+
+
+
 if __name__ == "__main__":
     app = create_app()
     with app.app_context():
         db.create_all()
     socketio.run(app, debug=True)  # Utilisation de socketio.run au lieu de app.run
     print("Tables créées avec succès.")
+
+
+def create_app():
+    app = Flask(__name__,
+                template_folder="../Frontend/templates",
+                static_folder="../Frontend/static")
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.abspath('db.sqlite3')}"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    app.secret_key = "votre_clé_secrète_super_secure_ici"
+
+    db.init_app(app)
+    migrate.init_app(app, db)  # Initialiser Flask-Migrate
+
+    return app
 
