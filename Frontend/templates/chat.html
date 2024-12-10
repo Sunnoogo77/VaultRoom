@@ -9,9 +9,9 @@
   </div>
 
   <!-- Champ pour envoyer un message -->
-  <form id="message-form">
-    <input type="hidden" iname="recipient_id" value="{{ recipient.id }}">
-    <textarea id="message-input" placeholder="Écrivez votre message ici..." required></textarea>
+  <form id="message-form" class="message-form">
+    <input type="hidden" id="recipient_id" name="recipient_id" value="{{ recipient.id }}">
+    <textarea id="message-input" name="message" placeholder="Écrivez votre message ici..." required></textarea>
     <button type="submit">Envoyer</button>
   </form>
 </div>
@@ -20,47 +20,46 @@
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     const recipient_id = document.getElementById('recipient_id').value;
-    const messageBox = document.getElementById('messages');
 
     // Charger les anciens messages
     fetch(`/get-messages?receiver_id=${recipient_id}`)
-    .then(response => response.json())
-    .then(messages => {
+      .then(response => response.json())
+      .then(messages => {
         if (!Array.isArray(messages)) {
-            console.error("Erreur lors du chargement des messages: La réponse n'est pas un tableau", messages);
-            return;
+          console.error("Erreur lors du chargement des messages: La réponse n'est pas un tableau", messages);
+          return;
         }
 
         const messageBox = document.getElementById("messages");
         messages.forEach(msg => {
-            const messageDiv = document.createElement("div");
-            messageDiv.classList.add("message", msg.sender === "Moi" ? "sent" : "received");
-            messageDiv.innerHTML = `
-                <p class="content">
-                    <strong>${msg.sender}</strong>: ${msg.content}
-                </p>
-                <span class="timestamp">${msg.timestamp}</span>
-            `;
-            messageBox.appendChild(messageDiv);
+          const messageDiv = document.createElement("div");
+          messageDiv.classList.add("message", msg.sender === "Moi" ? "sent" : "received");
+          messageDiv.innerHTML = `
+            <p class="content">
+              <strong>${msg.sender}</strong>: ${msg.content}
+            </p>
+            <span class="timestamp">${msg.timestamp}</span>
+          `;
+          messageBox.appendChild(messageDiv);
         });
 
         // Scroller vers le bas
         messageBox.scrollTop = messageBox.scrollHeight;
-    })
-    .catch(error => {
+      })
+      .catch(error => {
         console.error("Erreur lors du chargement des messages:", error);
-    });
+      });
   });
 
   const socket = io.connect();
 
   // Fonction pour envoyer un message
-  const form = document.querySelector(".message-form");
+  const form = document.getElementById("message-form");
   form.onsubmit = (e) => {
     e.preventDefault();
 
     const formData = new FormData(form);
-    const message = formData.get('message-input');
+    const message = formData.get('message');
     const recipient_id = formData.get('recipient_id');
 
     // Émettre l'événement 'send_message'
