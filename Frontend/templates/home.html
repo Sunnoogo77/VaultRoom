@@ -1,8 +1,73 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container">
-  <h3>Bienvenue sur VaultRoom</h3>
-  <a href="/login-page">Se Connecter</a>
-  <a href="/register-page">Créer un Compte</a>
+<div class="home-container">
+  <h1>Bienvenue sur VaultRoom</h1>
+  <p>Votre espace sécurisé pour des discussions privées, protégé par des technologies de cryptage modernes.</p>
+
+  <div class="features">
+    <h2>Fonctionnalités</h2>
+    <ul>
+      <li>📢 Communication en temps réel</li>
+      <li>🔒 Données 100% sécurisées grâce au chiffrement TLS</li>
+      <li>💬 Interface simplifiée pour des discussions privées ou en groupe</li>
+    </ul>
+  </div>
+
+  <div class="actions">
+    <a href="/login-page" class="btn btn-primary">Se connecter</a>
+    <a href="/register-page" class="btn btn-secondary">Créer un compte</a>
+  </div>
 </div>
+
+<style>
+  .home-container {
+    text-align: center;
+    padding: 50px;
+  }
+  h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+  }
+  p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+  }
+  .features {
+    margin-bottom: 40px;
+  }
+  .features h2 {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+  }
+  .features ul {
+    list-style-type: none;
+    padding: 0;
+    font-size: 1.1em;
+  }
+  .features ul li {
+    margin-bottom: 10px;
+  }
+  .actions .btn {
+    display: inline-block;
+    margin: 10px;
+    padding: 15px 30px;
+    font-size: 1.1em;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: all 0.3s;
+  }
+  .btn-primary {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+  }
+  .btn-secondary {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+  }
+  .btn:hover {
+    opacity: 0.8;
+  }
+</style>
 {% endblock %}
