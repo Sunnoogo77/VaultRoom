@@ -10,6 +10,7 @@ main = Blueprint(
     template_folder="../Frontend/templates",
     static_folder="../Frontend/static")
 
+
 @main.route('/login-page')
 def login_page():
     return render_template('login.html')
@@ -21,7 +22,7 @@ def register_page():
 
 @main.route("/")
 def home():
-    return {"status": "Server is running successfully"}
+    return render_template('home.html')
 
 # API pour l'enregistrement
 @main.route('/register', methods=['POST'])
