@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify, render_template, redirect, url_for, session
+from flask_socketio import emit, join_room, leave_room
 from extensions import db, bcrypt
 from models import User, Message
+from socketio_instance import socketio
 
 main = Blueprint(
     "main",
@@ -102,84 +104,123 @@ def login():
     except Exception as e:
         # Gestion des erreurs inattendues
         return jsonify({'error': 'Erreur interne.', 'details': str(e)}), 500
-
-#Route pour envoyer les messages
-@main.route('/send-message', methods=['POST'])
-def send_message():
-
-    if 'user_id' not in session:
-        return jsonify({'error': 'Vous devez être connecté pour envoyer un message.'}), 401
     
-    if request.is_json:
-        data = request.get_json()
-    else:
-        data = request.form.to_dict()
 
-    sender_id = session['user_id']
-    receiver_id = data.get('receiver_id')
-    room = data.get('room')
-    content = data.get('message')
+#-----------------------------------
 
-    #if not sender_id or not content:
-        #return jsonify({'error': 'Les champs sender_id et content sont requis.'}), 400
-
-    # Création du message
-    #{message = Message(sender_id=sender_id, receiver_id=receiver_id, room=room, content=content)
+#Joinning Chat
+@socketio.on('join_chat')
+def handle_join_chat(data):
+    # 1. Obtenir l'ID de l'utilisateur connecté
+    user_id = session.get('user_id')
     
+    # 2. Vérifier que l'utilisateur est bien authentifié
+    if user_id:
+        # 3. Ajouter l'utilisateur à une room dédiée (son user_id)
+        join_room(str(user_id))
+        
+        # 4. Informer les autres (ou le système) qu'il a rejoint la room
+        emit('info', {'message': f'{session["username"]} a rejoint la discussion.'}, room=str(user_id))
+
+
+
+# Route pour envoyer un message via WebSocket
+@socketio.on('send_message')
+def handle_send_message(data):
+
+    
+
     try:
-        # Ajouter le message dans la base de données
-        new_message = Message(
-            sender_id=sender_id,
-            receiver_id=receiver_id,
-            content=content
-        )
 
-        db.session.add(message)
+        if 'user_id' not in session:
+            return jsonify({'error': 'Vous devez être connecté pour voir les messages.'}), 401
+    
+        sender_id = session.get('user_id')
+        receiver_id = data.get('receiver_id')
+        content = data.get('message')
+
+        if not sender_id or not receiver_id or not content:
+            emit('error', {'error': 'Données incomplètes pour envoyer un message.'}, room=request.sid)
+            return
+    
+        recipient = User.query.get(receiver_id)
+        if not recipient:
+            emit('error', {'error': 'Destinataire introuvable.'}, room=request.sid)
+            return
+
+
+        # Ajouter le message dans la base de données
+        new_message = Message(sender_id=sender_id, receiver_id=receiver_id, content=content)
+        db.session.add(new_message)
         db.session.commit()
 
-        return jsonify({
-            'sender': 'Moi',
+        # Émettre le message en temps réel au destinataire
+        emit('receive_message', {
+            'sender': 'Moi' if sender_id == session['user_id'] else User.query.get(sender_id).username,
             'content': content,
             'timestamp': new_message.timestamp.strftime('%d/%m/%Y %H:%M:%S')
-        }), 201
-    
-        #return jsonify({'message': 'Message envoyé avec succès.'}), 201
+        }, room=str(receiver_id))
     except Exception as e:
-        return jsonify({'error': 'Erreur lors de l\'envoi du message.', 'details': str(e)}), 500
+        emit('error', {'error': f'Erreur lors de l\'envoi du message : {str(e)}'}, room=request.sid)
 
-#Routes pour recevoir les messages
-@main.route('/get-messages/<int:receiver_id>', methods=['GET'])
+
+# Route pour rejoindre une discussion
+@main.route('/get-messages', methods=['GET'])
 def get_messages():
     if 'user_id' not in session:
         return jsonify({'error': 'Vous devez être connecté pour voir les messages.'}), 401
-    
-    room = request.args.get('room')
+
     sender_id = session['user_id']
     receiver_id = request.args.get('receiver_id')
 
-    try:
-        if room:
-            messages = Message.query.filter_by(room=room).all()
-        elif sender_id and receiver_id:
-            messages = Message.query.filter(
-                (Message.sender_id == sender_id) & (Message.receiver_id == receiver_id) |
-                (Message.sender_id == receiver_id) & (Message.receiver_id == sender_id)
-            ).all()
-        else:
-            return jsonify({'error': 'Veuillez spécifier une room ou un sender_id/receiver_id.'}), 400
+    if not receiver_id:
+        return jsonify({'error': 'Aucun destinataire spécifié.'}), 400
 
-        return jsonify([{
-            'id': msg.id,
-            'sender_id': msg.sender_id,
-            'receiver_id': msg.receiver_id,
-            'room': msg.room,
+    try:
+        # Récupérer tous les messages envoyés et reçus dans une seule requête
+        all_messages = Message.query.filter(
+            ((Message.sender_id == sender_id) & (Message.receiver_id == receiver_id)) |
+            ((Message.sender_id == receiver_id) & (Message.receiver_id == sender_id))
+        ).order_by(Message.timestamp.asc()).all()
+
+        # Formater les messages pour le JSON
+        messages_json = [{
+            'sender': 'Moi' if msg.sender_id == sender_id else User.query.get(msg.sender_id).username,
             'content': msg.content,
-            'timestamp': msg.timestamp.strftime('%Y-%m-%d %H:%M:%S')
-        } for msg in messages]), 200
+            'timestamp': msg.timestamp.strftime('%d/%m/%Y %H:%M:%S')
+        } for msg in all_messages]
+
+        return jsonify(messages_json), 200
 
     except Exception as e:
         return jsonify({'error': 'Erreur lors de la récupération des messages.', 'details': str(e)}), 500
+    
+# Route pour afficher la page de discussion
+@main.route('/chat', methods=['GET'])
+def chat():
+    current_user_id = session.get('user_id')
+    if not current_user_id:
+        return jsonify({"error": "Utilisateur non authentifié"}), 401
 
+    # Récupérer l'ID du destinataire à partir des paramètres de l'URL
+    recipient_id = request.args.get('user_id')  # Cela doit correspondre à l'URL
+    print(f"Recipient ID: {recipient_id}")  # DEBUG: Afficher l'ID du destinataire
+
+    if not recipient_id:
+        return jsonify({"error": "Aucun destinataire spécifié."}), 400
+
+    # Vérifier si l'utilisateur existe dans la base de données
+    recipient = User.query.get(recipient_id)
+    print(f"Recipient Object: {recipient}")  # DEBUG: Afficher les détails de l'utilisateur
+
+    if not recipient:
+        return jsonify({"error": "Utilisateur non trouvé"}), 404
+
+    user = {
+        "id": current_user_id,
+        "username": session.get('username')
+    }
+    return render_template('chat.html', recipient=recipient, user=user)
 #route pour afficher Dashboard
 @main.route('/dashboard')
 def dashboard():
@@ -198,50 +239,6 @@ def dashboard():
         return render_template('dashboard.html', users=users, user=current_user)
     except Exception as e:
         return jsonify({"error": "Erreur lors du chargement des utilisateurs", "details": str(e)})
-
-#Route pour le Chats
-@main.route('/chat', methods=['GET', 'POST'])
-def chat():
-    # Récupérer les informations utilisateur à partir de la session
-    current_user_id = session.get('user_id')
-    if not current_user_id:
-        return jsonify({"error": "Utilisateur non authentifié"}), 401
-
-    if request.method == 'GET':
-        recipient_id = request.args.get('user_id')
-        recipient = User.query.get(recipient_id)
-
-        if not recipient:
-            return jsonify({"error": "Utilisateur non trouvé"}), 404
-
-        # Récupérer les messages entre l'utilisateur actuel et le destinataire
-        messages = Message.query.filter(
-            ((Message.sender_id == current_user_id) & (Message.receiver_id == recipient.id)) |
-            ((Message.sender_id == recipient.id) & (Message.receiver_id == current_user_id))
-        ).order_by(Message.timestamp.asc()).all()
-
-        return render_template('chat.html', messages=messages, recipient=recipient, user={"id": current_user_id})
-
-    elif request.method == 'POST':
-        # Envoi d'un message
-        data = request.form
-        content = data.get('message')
-        recipient_id = data.get('recipient_id')
-
-        if not content:
-            return jsonify({"error": "Le message ne peut pas être vide"}), 400
-
-        try:
-            new_message = Message(sender_id=current_user_id, receiver_id=recipient_id, content=content)
-            db.session.add(new_message)
-            db.session.commit()
-            return jsonify({
-                "message": "Message envoyé avec succès",
-                "content": content,
-                "timestamp": new_message.timestamp.strftime('%d/%m/%Y %H:%M:%S')
-            }), 200
-        except Exception as e:
-            return jsonify({"error": "Erreur lors de l'envoi du message", "details": str(e)}), 500
 
 
 @main.route("/test-db")
