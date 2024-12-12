@@ -60,7 +60,7 @@ def register():
 
     db.session.add(new_user)
     db.session.commit()
-    return jsonify({'message': 'Utilisateur créé avec succès.'}), 201
+    return render_template('home.html')
 
 # API pour la connexion
 @main.route('/login', methods=['POST'])
