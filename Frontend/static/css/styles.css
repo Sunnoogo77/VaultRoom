@@ -109,6 +109,17 @@
     margin-top: 5px;
   }
 
+  .message-input{
+    border-radius: 100px;
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-top: 1.5%;
+    padding-bottom: 0.5%;
+    margin-top: 3%;
+    margin-right: 5%;
+    margin-left: 5%;
+    width: 60%;
+  }
   /* Fin de style pour les messages/*
 
   /* Style for DashBoard */
@@ -162,5 +173,67 @@
   .btn:hover {
     opacity: 0.8;
   }
+
+  /* Conteneur principal pour aligner en flex les deux colonnes */
+.chat-interface {
+  display: flex;
+  height: 80vh; /* Ajustez selon vos besoins */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Colonne gauche (Liste des utilisateurs) */
+.user-list {
+  flex: 1; /* Prend 1/3 de l'espace */
+  background-color: #f7f7f7;
+  border-right: 1px solid #ddd;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.user-list h3 {
+  margin-bottom: 15px;
+  font-size: 18px;
+  color: #555;
+}
+
+.user-item {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #e3e3e3;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.user-item:hover {
+  background-color: #ddd;
+}
+
+/* Colonne droite (zone de contenu ou image) */
+.chat-display {
+  flex: 2; /* Prend 2/3 de l'espace */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fafafa;
+  color: #888;
+}
+
+.chat-display img {
+  max-width: 50%;
+  opacity: 0.5;
+}
+
+/* Ajout d'un style pour l'ensemble */
+.dashboard-container {
+  padding: 20px;
+}
+
+.chat-link {
+  text-decoration: none;
+  color: inherit;
+}
 
   /* End Style for DasshBoard */
