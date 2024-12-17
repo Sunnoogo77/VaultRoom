@@ -109,11 +109,84 @@ def login():
 
 #-----------------------------------
 
+ 
+# Route pour envoyer un message via WebSocket
+@socketio.on('send_message')
+def handle_send_message(data):
+    try:
+        sender_id = session.get('user_id')  # ID de l'utilisateur connecté
+        receiver_id = data.get('recipient_id')
+        content = data.get('message')
+
+        if not sender_id or not receiver_id or not content:
+            emit('error', {'error': 'Données incomplètes pour envoyer un message.'}, room=request.sid)
+            return
+
+        # Vérifier que le destinataire existe
+        recipient = User.query.get(receiver_id)
+        if not recipient:
+            emit('error', {'error': 'Destinataire introuvable.'}, room=request.sid)
+            return
+
+        # Ajouter le message dans la base de données
+        new_message = Message(sender_id=sender_id, receiver_id=receiver_id, content=content)
+        # db.session.add(new_message)
+        # db.session.commit()
+
+        # Émettre le message en temps réel au destinataire
+        emit('receive_message', {
+            'sender': session['username'],
+            'content': content,
+            'timestamp': new_message.timestamp.strftime('%d/%m/%Y %H:%M:%S')
+        }, room=str(receiver_id))
+
+        # Informer l'expéditeur que le message a été envoyé avec succès
+        emit('message_sent', {'status': 'success', 'content': content}, room=request.sid)
+        print( "Message envoyer")
+    except Exception as e:
+        emit('error', {'error': f'Erreur lors de l\'envoi du message : {str(e)}'}, room=request.sid)
+
+
+@main.route('/send-message', methods=['POST'])
+def send_message():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Vous devez être connecté pour envoyer un message.'}), 401
+
+    sender_id = session['user_id']
+    receiver_id = request.form.get('recipient_id')
+    content = request.form.get('message')
+
+    # Vérifier les champs
+    if not receiver_id or not content:
+        return jsonify({'error': 'Tous les champs sont requis.'}), 400
+
+    try:
+        # Vérifier si le destinataire existe
+        recipient = User.query.get(receiver_id)
+        if not recipient:
+            return jsonify({'error': 'Destinataire introuvable.'}), 404
+
+        # Enregistrer le message dans la base de données
+        new_message = Message(sender_id=sender_id, receiver_id=receiver_id, content=content)
+        db.session.add(new_message)
+        db.session.commit()
+
+        print("Message enregistré dans la base de données.")
+
+        # Rediriger vers la même page (rafraîchissement)
+        return redirect(url_for('main.chat', user_id=receiver_id))
+
+    except Exception as e:
+        print(f"Erreur : {e}")
+        return jsonify({'error': 'Erreur lors de l\'enregistrement du message.'}), 500
+    
+
 #Joinning Chat
-@socketio.on('join_chat')
+@socketio.on('join_room')
 def handle_join_chat(data):
     # 1. Obtenir l'ID de l'utilisateur connecté
     user_id = session.get('user_id')
+    
     
     # 2. Vérifier que l'utilisateur est bien authentifié
     if user_id:
@@ -122,47 +195,6 @@ def handle_join_chat(data):
         
         # 4. Informer les autres (ou le système) qu'il a rejoint la room
         emit('info', {'message': f'{session["username"]} a rejoint la discussion.'}, room=str(user_id))
-
-
-
-# Route pour envoyer un message via WebSocket
-@socketio.on('send_message')
-def handle_send_message(data):
-
-    
-
-    try:
-
-        if 'user_id' not in session:
-            return jsonify({'error': 'Vous devez être connecté pour voir les messages.'}), 401
-    
-        sender_id = session.get('user_id')
-        receiver_id = data.get('receiver_id')
-        content = data.get('message')
-
-        if not sender_id or not receiver_id or not content:
-            emit('error', {'error': 'Données incomplètes pour envoyer un message.'}, room=request.sid)
-            return
-    
-        recipient = User.query.get(receiver_id)
-        if not recipient:
-            emit('error', {'error': 'Destinataire introuvable.'}, room=request.sid)
-            return
-
-
-        # Ajouter le message dans la base de données
-        new_message = Message(sender_id=sender_id, receiver_id=receiver_id, content=content)
-        db.session.add(new_message)
-        db.session.commit()
-
-        # Émettre le message en temps réel au destinataire
-        emit('receive_message', {
-            'sender': 'Moi' if sender_id == session['user_id'] else User.query.get(sender_id).username,
-            'content': content,
-            'timestamp': new_message.timestamp.strftime('%d/%m/%Y %H:%M:%S')
-        }, room=str(receiver_id))
-    except Exception as e:
-        emit('error', {'error': f'Erreur lors de l\'envoi du message : {str(e)}'}, room=request.sid)
 
 
 # Route pour rejoindre une discussion
@@ -188,7 +220,7 @@ def get_messages():
         messages_json = [{
             'sender': 'Moi' if msg.sender_id == sender_id else User.query.get(msg.sender_id).username,
             'content': msg.content,
-            'timestamp': msg.timestamp.strftime('%d/%m/%Y %H:%M:%S')
+            'timestamp': msg.timestamp.strftime('%d/%m %H:%M') #'timestamp': msg.timestamp.strftime('%d/%m/%Y %H:%M:%S')
         } for msg in all_messages]
 
         return jsonify(messages_json), 200
