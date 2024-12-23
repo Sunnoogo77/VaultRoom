@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>VaultRoom</title>
+    <link
+      rel="stylesheet"
+      href="../static/css/styles.css"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+      crossorigin="anonymous"
+    ></script>
+    
+  </head>
+  <body style="margin-bottom: 50px;">
+    <div class="container" id="container">
+        <div class="form-container sign-up-container">
+            <form method="post" action="/register" enctype="application/json" class="form">
+                <h1>Create Account</h1>
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your email for registration</span>
+                <input type="text" placeholder="Nom d'utilisateur :" required/>
+                <input type="email" placeholder="Email"  required/>
+                <input type="password" placeholder="Mot de passe :" required/>
+                <button type="submit">Créer un Compte</button>
+            </form>
+        </div>
+        <div class="form-container sign-in-container">
+            <form method="post" action="/login" enctype="application/json" id="login-form" class="form">
+                <h1>Sign in</h1>
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                <span>or use your account</span>
+                <input type="text" placeholder="Nom d'utilisateur :" required/>
+                <input type="password" placeholder="Password" required/>
+                <a href="#">Forgot your password?</a>
+                <button type="submit" id="login-btn">Se Connecter</button>
+            </form>
+        </div>
+
+        <script>
+            document.getElementById("login-btn").addEventListener("click", async () => {
+            const formData = new FormData(document.getElementById("login-form"));
+            const data = Object.fromEntries(formData);
+            try {
+                const response = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+                });
+                const result = await response.json();
+                if (response.ok) {
+                alert(result.message);
+                } else {
+                document.getElementById("login-error").innerText = result.error;
+                }
+            } catch (err) {
+                document.getElementById("login-error").innerText = "Erreur de connexion.";
+            }
+            });
+        </script>
+
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Welcome Back!</h1>
+                    <p>To keep connected with us please login with your personal info</p>
+                    <button class="ghost" id="signIn">Sign In</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>Hello, Friend!</h1>
+                    <p>Enter your personal details and start journey with us</p>
+                    <button class="ghost" id="signUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+  </body>
+
+</html>
+
+<script>
+    const signUpButton = document.getElementById('signUp');
+    const signInButton = document.getElementById('signIn');
+    const container = document.getElementById('container');
+
+    signUpButton.addEventListener('click', () => {
+        container.classList.add("right-panel-active");
+    });
+
+    signInButton.addEventListener('click', () => {
+        container.classList.remove("right-panel-active");
+    });
+</script>
+
+
+
+
+
