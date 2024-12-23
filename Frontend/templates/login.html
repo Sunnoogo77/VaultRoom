@@ -1,41 +1,74 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class="container">
-  <h3>Connexion</h3>
-  <form method="post" action="/login" enctype="application/json" id="login-form" class="form">
-    <div>
-      <label>Nom d'utilisateur :</label>
-      <input type="text" name="username" placeholder="Entrez votre nom d'utilisateur" required />
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>VaultRoom</title>
+    <link
+      rel="stylesheet"
+      href="../static/css/styles.css"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+      crossorigin="anonymous"
+    ></script>
+    
+  </head>
+  <body>
+    <!-- <nav class="nav">
+      <div style="display: flex; justify-content: space-between; align-items: center; color: white;">
+        <a href="/home" style="color: white; text-decoration: none; font-size: 1rem;">
+          <div class="chat-header">
+            <button class="back-button" style="margin-left: 30px; border-radius: 10px;">
+              <span id="button_text">Home</span>
+          </button>
+          </div>
+        </a>
+        <h2 style="margin: 0; text-align: left; color: black;">VAULTROOM2.0</h2>
+        <a href="/logout" style="color: white; text-decoration: none; font-size: 1rem;">
+          <div class="chat-header">
+            <button class="back-button1">Se Déconnecter</button>
+          </div>
+        </a>
+      </div>
+    </nav> -->
+    <div class="content">
+      <div class="container1">
+        
+        <form class="form1" method="post" action="/login" enctype="application/json" id="login-form" class="form">
+          <h3>Connexion</h3>
+          <div>
+            <input type="text" name="username" placeholder="Nom d'utilisateur :" required />
+          </div>
+          <div>
+            <input type="password" name="password" placeholder="Mot de passe :" required />
+          </div>
+          <button type="submit" id="login-btn">Se Connecter</button>
+        </form>
+      </div>
+      
+      
+      <script>
+        document.getElementById("login-btn").addEventListener("click", async () => {
+          const formData = new FormData(document.getElementById("login-form"));
+          const data = Object.fromEntries(formData);
+          try {
+            const response = await fetch('/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(data),
+            });
+            const result = await response.json();
+            if (response.ok) {
+              alert(result.message);
+            } else {
+              document.getElementById("login-error").innerText = result.error;
+            }
+          } catch (err) {
+            document.getElementById("login-error").innerText = "Erreur de connexion.";
+          }
+        });
+      </script>
     </div>
-    <div>
-      <label>Mot de passe :</label>
-      <input type="password" name="password" placeholder="Entrez votre mot de passe" required />
-    </div>
-    <button type="submit" id="login-btn">Se Connecter</button>
-  </form>
-</div>
-
-
-<script>
-  document.getElementById("login-btn").addEventListener("click", async () => {
-    const formData = new FormData(document.getElementById("login-form"));
-    const data = Object.fromEntries(formData);
-    try {
-      const response = await fetch('/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      const result = await response.json();
-      if (response.ok) {
-        alert(result.message);
-      } else {
-        document.getElementById("login-error").innerText = result.error;
-      }
-    } catch (err) {
-      document.getElementById("login-error").innerText = "Erreur de connexion.";
-    }
-  });
-  </script>
-  
-{% endblock %}
+  </body>
+</html>
