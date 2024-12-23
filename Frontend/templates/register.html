@@ -1,21 +1,52 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class="container">
-  <h3>Inscription</h3>
-  <form method="post" action="/register" enctype="application/json" class="form">
-    <div>
-      <label>Nom d'utilisateur :</label>
-      <input type="text" name="username" placeholder="Choisissez un nom" required />
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>VaultRoom</title>
+    <link
+      rel="stylesheet"
+      href="../static/css/styles.css"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+      integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+      crossorigin="anonymous"
+    ></script>
+    
+  </head>
+  <body>
+    <!-- <nav class="nav">
+      <div style="display: flex; justify-content: space-between; align-items: center; color: white;">
+        <a href="/home" style="color: white; text-decoration: none; font-size: 1rem;">
+          <div class="chat-header">
+            <button class="back-button" style="margin-left: 30px; border-radius: 10px;">
+              <span id="button_text">Home</span>
+          </button>
+          </div>
+        </a>
+        <h2 style="margin: 0; text-align: left; color: black;">VAULTROOM2.0</h2>
+        <a href="/logout" style="color: white; text-decoration: none; font-size: 1rem;">
+          <div class="chat-header">
+            <button class="back-button1">Se Déconnecter</button>
+          </div>
+        </a>
+      </div>
+    </nav> -->
+    <div class="container">
+      
+      <form class="form2" method="post" action="/register" enctype="application/json" class="form">
+        <h3>Inscription</h3>
+        <div>
+          <input type="text" name="username" placeholder="Nom d'utilisateur :" required />
+        </div>
+        <div>
+          <input type="email" name="email" placeholder="Email :" required />
+        </div>
+        <div>
+          <input type="password" name="password" placeholder="Mot de passe :" required />
+        </div>
+        <button type="submit">Créer un Compte</button>
+      </form>
     </div>
-    <div>
-      <label>Email :</label>
-      <input type="email" name="email" placeholder="Entrez votre email" required />
-    </div>
-    <div>
-      <label>Mot de passe :</label>
-      <input type="password" name="password" placeholder="Choisissez un mot de passe" required />
-    </div>
-    <button type="submit">Créer un Compte</button>
-  </form>
-</div>
-{% endblock %}
+  </body>
+</html>
