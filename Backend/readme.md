@@ -1,7 +1,3 @@
-Merci pour le partage détaillé des fichiers backend ! Voici comment je vais structurer le README pour le backend :
-
-README pour le Back-End
-
 1. Introduction
 
 Ce backend utilise Flask pour gérer les fonctionnalités d’une application de messagerie, avec une base de données SQLite pour stocker les utilisateurs et les messages. Les routes couvrent l’authentification, la messagerie et la gestion en temps réel via Socket.IO.
@@ -117,5 +113,3 @@ timestamp	DateTime	Date et heure d’envoi.
 7. Notes et Améliorations
 	•	L’intégration de Socket.IO pour des messages en temps réel est partiellement implémentée.
 	•	Des tests unitaires sont recommandés pour garantir la robustesse.
-
-Ce README est prêt à être intégré. Si des modifications sont nécessaires ou si des sections spécifiques doivent être ajoutées, faites-le-moi savoir !
