@@ -1,41 +1,39 @@
-# VaultRoom : Une Solution Sécurisée pour Échanges et Partages 🔐  
-
-## 🛠️ Objectif du Projet  
-**VaultRoom** est une plateforme de communication et de partage sécurisée, conçue pour garantir la confidentialité des échanges entre utilisateurs. Ce projet met en œuvre des concepts fondamentaux de cybersécurité pour offrir une solution pratique et robuste.  
+Merci pour le rappel du README principal ! Voici une version mise à jour qui prend en compte les dernières évolutions du projet, ainsi qu'un plan pour le README spécifique au frontend.  
 
 ---
 
+## README Principal (Mise à jour)  
+
+# VaultRoom : Une Solution Sécurisée pour Échanges et Partages 🔐  
+
+## 🛠️ Objectif du Projet  
+**VaultRoom** est une plateforme de communication et de partage sécurisée, conçue pour garantir la confidentialité des échanges entre utilisateurs. Ce projet met en œuvre des concepts fondamentaux de cybersécurité pour offrir une solution pratique et robuste, en combinant une interface moderne et un backend sécurisé.  
+
+---
 
 ## ✨ Fonctionnalités Clés  
 
 1. **Communication Sécurisée**  
-   - Messages chiffrés avec TLS/SSL pour protéger la confidentialité.  
+   - Messages stockés en base de données avec chiffrement TLS pour protéger la confidentialité.  
+   - Possibilité de discussion privée entre utilisateurs.  
 2. **Authentification des Utilisateurs**  
-   - Connexions sécurisées avec gestion des utilisateurs.  
-3. **Interface Intuitive**  
-   - Un chat simple et fonctionnel pour les utilisateurs.  
-4. **Journalisation des Activités**  
-   - Suivi des événements pour plus de transparence et un audit facile.  
+   - Inscription et connexion avec validation sécurisée.  
+3. **Interface Moderne et Intuitive**  
+   - Chat simplifié et responsive avec des fonctionnalités interactives.  
+4. **Gestion des Utilisateurs**  
+   - Liste des utilisateurs connectés disponible sur le panneau latéral pour faciliter les interactions.  
+5. **Extension et Évolutivité**  
+   - Structure prête à intégrer des fonctionnalités en temps réel et des modules complémentaires.  
 
 ---
 
 ## 🌟 Technologies Utilisées  
 
-- **Python** : Langage principal pour le backend (serveur et sockets).  
-- **React** : Framework JS pour l’interface utilisateur (frontend).  
-- **SQLite** : Base de données légère pour gérer les utilisateurs et les journaux.  
-- **Bind9, isc-dhcp-server** : Pour la configuration DNS/DHCP (optionnel).  
-- **TLS/SSL** : Pour sécuriser les communications.  
-
----
-
-## 🚀 Pourquoi ce Projet ?  
-
-VaultRoom a été conçu pour explorer des concepts clés en cybersécurité, notamment :  
-- La sécurisation des communications via des protocoles modernes (TLS/SSL).  
-- L’authentification et la gestion des utilisateurs dans un environnement protégé.  
-- L’intégration d’un réseau local sécurisé avec DNS et DHCP.  
-- La sensibilisation aux bonnes pratiques en matière de sécurité.  
+- **Python (Flask)** : Backend pour les fonctionnalités et les API.  
+- **HTML, CSS, JavaScript** : Construction de l'interface utilisateur (frontend).  
+- **SQLite** : Base de données légère pour la gestion des utilisateurs et des messages.  
+- **Socket.IO** *(option à venir)* : Préparé pour des communications en temps réel.  
+- **TLS/SSL** : Pour sécuriser toutes les communications.  
 
 ---
 
@@ -43,17 +41,69 @@ VaultRoom a été conçu pour explorer des concepts clés en cybersécurité, no
 
 ```plaintext
 VaultRoom/
-├── Preparations/               # Préparations techniques optionnelles
-│   ├── DNS_Config/             # Configuration DNS pour vaultroom.local
-│   ├── DHCP_Config/            # Configuration DHCP pour le réseau local
-│   ├── Firewall_Rules/         # Règles de pare-feu
-│   ├── TLS_Security/           # Certificats TLS/SSL
-│   └── README.md               # Explications des préparations
 ├── Backend/                    # Serveur principal
-│   ├── server.py               # Serveur socket principal
-│   └── README.md
+│   ├── app.py                  # Point d'entrée de l'application
+│   ├── extensions.py           # Extensions Flask (DB, Bcrypt, etc.)
+│   ├── models.py               # Modèles de données
+│   ├── routes.py               # Routes Flask pour les fonctionnalités backend
+│   ├── README.md               # Documentation backend
+│   └── static/                 # Certificats TLS/SSL (optionnels)
+│
 ├── Frontend/                   # Interface utilisateur
-│   ├── index.html              # Page principale
-│   ├── styles.css              # Fichiers CSS
-│   └── app.js                  # Logiciel frontend
+│   ├── templates/              # Fichiers HTML
+│   │   ├── base.html           # Template de base
+│   │   ├── home.html           # Page d'accueil
+│   │   ├── login.html          # Page de connexion
+│   │   ├── register.html       # Page d'inscription
+│   │   ├── chat.html           # Interface de discussion
+│   │   └── dashboard.html      # Tableau de bord
+│   ├── static/                 # Fichiers CSS et JS
+│   │   ├── css/
+│   │   │   └── styles.css      # Styles globaux
+│   │   └── js/
+│   │       └── app.js          # Scripts interactifs
+│   ├── README.md               # Documentation frontend
+│
 └── README.md                   # Documentation principale
+```  
+
+---
+
+## 🚀 Pourquoi ce Projet ?  
+
+VaultRoom a été conçu pour :  
+- Explorer des concepts clés en cybersécurité tels que le chiffrement TLS/SSL.  
+- Proposer une plateforme simple, moderne et extensible pour la communication privée.  
+- Mettre en œuvre de bonnes pratiques pour le développement web sécurisé.  
+
+---
+
+## 📋 Étapes pour Démarrer  
+
+1. **Pré-requis** :  
+   - Python 3.8+  
+   - Flask  
+   - SQLite  
+
+2. **Installation** :  
+   ```bash
+   git clone https://github.com/username/vaultroom.git
+   cd vaultroom
+   python -m venv env
+   source env/bin/activate  # Sur Windows, utilisez env\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+3. **Exécution** :  
+   ```bash
+   python app.py
+   ```
+
+4. **Accéder à l'application** :  
+   Ouvrez un navigateur et rendez-vous sur `https://localhost:5000`.  
+
+---
+
+## 📞 Contact  
+
+Pour toute question ou amélioration, n'hésitez pas à créer une issue ou à contacter l'équipe de développement.  
