@@ -1,7 +1,3 @@
-Merci pour le rappel du README principal ! Voici une version mise à jour qui prend en compte les dernières évolutions du projet, ainsi qu'un plan pour le README spécifique au frontend.  
-
----
-
 ## README Principal (Mise à jour)  
 
 # VaultRoom : Une Solution Sécurisée pour Échanges et Partages 🔐  
