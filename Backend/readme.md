@@ -127,11 +127,5 @@ Le projet est organisé de manière à favoriser la lisibilité et la maintenabi
 
 ---
 
-## 7. Notes et Suggestions  
-
-- **Socket.IO** : Une implémentation partielle est en place pour les messages en temps réel. Elle peut être étendue pour d'autres fonctionnalités (statut en ligne, notifications).  
-- **Tests unitaires** : Il est recommandé d’écrire des tests pour assurer la robustesse et éviter les régressions.  
-
----
 
 En adoptant cette architecture, vous obtenez un backend robuste, modulable, et prêt à supporter une expérience utilisateur fluide et sécurisée. 🚀
