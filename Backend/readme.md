@@ -1,115 +1,137 @@
-1. Introduction
+# Guide du Backend pour l'Application de Messagerie
 
-Ce backend utilise Flask pour gérer les fonctionnalités d’une application de messagerie, avec une base de données SQLite pour stocker les utilisateurs et les messages. Les routes couvrent l’authentification, la messagerie et la gestion en temps réel via Socket.IO.
+## 1. Introduction  
 
-2. Structure du Projet
+Ce backend repose sur **Flask**, un micro-framework Python léger et puissant, pour orchestrer les fonctionnalités d'une application de messagerie. Il utilise **SQLite** comme base de données pour gérer les utilisateurs et les messages, et **Socket.IO** pour une communication en temps réel. Grâce à une architecture claire et modulable, ce projet est à la fois simple à comprendre et prêt à évoluer.
 
-Voici les principaux fichiers et leurs rôles :
-	•	app.py : Point d’entrée de l’application. Configure les extensions (Socket.IO, SQLAlchemy) et démarre le serveur.
-	•	extensions.py : Initialise les extensions comme SQLAlchemy pour la base de données et Bcrypt pour le hachage des mots de passe.
-	•	models.py : Définit les modèles de la base de données pour les utilisateurs et les messages.
-	•	routes.py : Contient les routes principales, y compris les fonctionnalités de messagerie, d’authentification et de gestion des utilisateurs.
-	•	socketio_instance.py : Configure une instance Socket.IO.
-	•	server.tls et client.tls : Contiennent les certificats nécessaires pour les connexions sécurisées.
-	•	requirements.txt : Liste des dépendances Python nécessaires.
+---
 
-3. Fonctionnalités Principales
+## 2. Structure du Projet  
 
-A. Authentification
-	•	Inscription : Vérifie les doublons et hache les mots de passe avant de les stocker.
-	•	Connexion : Valide les identifiants et démarre une session utilisateur.
-	•	Déconnexion : Efface la session utilisateur.
+Le projet est organisé de manière à favoriser la lisibilité et la maintenabilité :  
 
-B. Messagerie
-	•	Envoyer et recevoir des messages entre utilisateurs.
-	•	Stockage des messages dans une base de données.
-	•	Récupération des messages pour l’historique des discussions.
+- **`app.py`** : Point d’entrée principal de l’application. Configure les extensions (Socket.IO, SQLAlchemy) et démarre le serveur.  
+- **`extensions.py`** : Initialise les outils nécessaires comme SQLAlchemy pour les bases de données et Bcrypt pour le hachage des mots de passe.  
+- **`models.py`** : Définit les structures des tables de la base de données, y compris les utilisateurs et les messages.  
+- **`routes.py`** : Regroupe les routes pour l'authentification, la messagerie et la gestion des utilisateurs.  
+- **`socketio_instance.py`** : Configure l’instance Socket.IO pour la communication en temps réel.  
+- **`server.tls` et `client.tls`** : Certificats pour les connexions sécurisées (HTTPS).  
+- **`requirements.txt`** : Liste les bibliothèques Python nécessaires au fonctionnement.  
 
-C. Socket.IO (en option pour temps réel)
-	•	Gère l’envoi et la réception des messages via des “rooms”.
-	•	Permet une communication en temps réel entre les utilisateurs connectés.
+---
 
-D. Gestion des Utilisateurs
-	•	Liste des utilisateurs connectés.
-	•	Filtrage des utilisateurs pour exclure l’utilisateur connecté.
+## 3. Fonctionnalités Principales  
 
-4. Installation et Lancement
+### A. Authentification  
+- **Inscription** : Vérifie l’unicité des utilisateurs et hache les mots de passe avant de les sauvegarder.  
+- **Connexion** : Valide les identifiants et démarre une session utilisateur sécurisée.  
+- **Déconnexion** : Efface les informations de session pour protéger la vie privée.  
 
-Prérequis
-	•	Python 3.9+.
-	•	Pipenv ou virtualenv (pour gérer les dépendances).
+### B. Messagerie  
+- **Messages privés** : Envoi et réception de messages entre utilisateurs.  
+- **Historique** : Stockage des messages dans la base de données et récupération pour consultation.  
 
-Étapes
-	1.	Cloner le projet :
+### C. Communication en temps réel (via Socket.IO)  
+- Gestion des messages en temps réel dans des “rooms”.  
+- Synchronisation instantanée entre utilisateurs connectés.  
 
-git clone [<URL_DU_REPO>](https://github.com/Sunnoogo77/VaultRoom/)
-cd backend
+### D. Gestion des Utilisateurs  
+- **Liste des utilisateurs connectés** : Visualisez en temps réel les utilisateurs actifs.  
+- **Exclusion automatique** : Filtrage pour ne pas afficher l'utilisateur connecté dans les listes.  
 
+---
 
-	2.	Créer un environnement virtuel :
+## 4. Installation et Lancement  
 
-python3 -m venv env
-source env/bin/activate  # Sur Windows : env\Scripts\activate
+### Prérequis  
+- Python **3.9+**.  
+- Gestionnaire de dépendances comme **Pipenv** ou **virtualenv**.  
 
+### Étapes d’installation  
 
-	3.	Installer les dépendances :
+1. **Cloner le projet** :  
+   ```bash
+   git clone https://github.com/Sunnoogo77/VaultRoom/
+   cd backend
+   ```
 
-pip install -r requirements.txt
+2. **Créer un environnement virtuel** :  
+   ```bash
+   python3 -m venv env
+   source env/bin/activate  # Sur Windows : env\Scripts\activate
+   ```
 
+3. **Installer les dépendances** :  
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-	4.	Configurer la base de données :
-	•	Assurez-vous que db.sqlite3 existe dans le répertoire du projet, ou utilisez Flask-Migrate :
+4. **Configurer la base de données** :  
+   - Vérifiez la présence de `db.sqlite3`, ou initialisez-la avec Flask-Migrate :  
+     ```bash
+     flask db init
+     flask db migrate -m "Initial migration"
+     flask db upgrade
+     ```
 
-flask db init
-flask db migrate -m "Initial migration"
-flask db upgrade
+5. **Lancer le serveur** :  
+   ```bash
+   python app.py
+   ```  
+   Le serveur sera accessible à l’adresse [http://127.0.0.1:80](http://127.0.0.1:80).
 
+---
 
-	5.	Lancer le serveur :
+## 5. Routes Disponibles  
 
-python app.py
+### A. Authentification  
+- **`POST /register`** : Enregistrement d’un nouvel utilisateur.  
+- **`POST /login`** : Connexion d’un utilisateur existant.  
+- **`GET /logout`** : Déconnexion de la session utilisateur.  
 
-Le serveur sera accessible sur http://127.0.0.1:80.
+### B. Messagerie  
+- **`POST /send-message`** : Envoi d’un message privé (avec stockage en base).  
+- **`GET /get-messages`** : Récupération des messages pour afficher l’historique.  
 
-5. Routes Disponibles
+### C. Gestion des Utilisateurs  
+- **`GET /get-users`** : Liste des utilisateurs (sauf l’utilisateur connecté).  
 
-A. Authentification
-	•	/register (POST) : Inscription des utilisateurs.
-	•	/login (POST) : Connexion des utilisateurs.
-	•	/logout (GET) : Déconnexion de l’utilisateur.
+### D. Pages Web  
+- **`GET /login-page`** : Page de connexion.  
+- **`GET /register-page`** : Page d’inscription.  
+- **`GET /chat`** : Interface pour discuter avec un autre utilisateur.  
 
-B. Messagerie
-	•	/send-message (POST) : Envoie un message et l’enregistre dans la base de données.
-	•	/get-messages (GET) : Récupère tous les messages entre deux utilisateurs.
+---
 
-C. Gestion des Utilisateurs
-	•	/get-users (GET) : Récupère tous les utilisateurs sauf l’utilisateur connecté.
+## 6. Modèles de la Base de Données  
 
-D. Pages Web
-	•	/login-page : Affiche la page de connexion.
-	•	/register-page : Affiche la page d’inscription.
-	•	/chat : Affiche la discussion avec un autre utilisateur.
+### **A. Utilisateur (`User`)**  
 
-6. Modèles de la Base de Données
+| Champ         | Type         | Description                          |  
+|---------------|--------------|--------------------------------------|  
+| `id`          | Integer      | Identifiant unique.                 |  
+| `username`    | String(80)   | Nom d’utilisateur.                  |  
+| `email`       | String(120)  | Adresse email (unique).             |  
+| `password`    | String(200)  | Mot de passe (haché).               |  
 
-A. User
+### **B. Message (`Message`)**  
 
-Champ	Type	Description
-id	Integer	Identifiant unique de l’utilisateur.
-username	String(80)	Nom d’utilisateur.
-email	String(120)	Adresse email unique.
-password	String(200)	Mot de passe haché.
+| Champ         | Type         | Description                          |  
+|---------------|--------------|--------------------------------------|  
+| `id`          | Integer      | Identifiant unique.                 |  
+| `sender_id`   | Integer      | ID de l’expéditeur (clé étrangère). |  
+| `receiver_id` | Integer      | ID du destinataire (clé étrangère). |  
+| `room`        | String(100)  | Identifiant unique de la “room”.    |  
+| `content`     | Text         | Contenu du message.                 |  
+| `timestamp`   | DateTime     | Date et heure d’envoi.              |  
 
-B. Message
+---
 
-Champ	Type	Description
-id	Integer	Identifiant unique du message.
-sender_id	Integer	ID de l’expéditeur (clé étrangère).
-receiver_id	Integer	ID du destinataire (clé étrangère).
-room	String(100)	Identifiant de la “room” de discussion.
-content	Text	Contenu du message.
-timestamp	DateTime	Date et heure d’envoi.
+## 7. Notes et Suggestions  
 
-7. Notes et Améliorations
-	•	L’intégration de Socket.IO pour des messages en temps réel est partiellement implémentée.
-	•	Des tests unitaires sont recommandés pour garantir la robustesse.
+- **Socket.IO** : Une implémentation partielle est en place pour les messages en temps réel. Elle peut être étendue pour d'autres fonctionnalités (statut en ligne, notifications).  
+- **Tests unitaires** : Il est recommandé d’écrire des tests pour assurer la robustesse et éviter les régressions.  
+
+---
+
+En adoptant cette architecture, vous obtenez un backend robuste, modulable, et prêt à supporter une expérience utilisateur fluide et sécurisée. 🚀
