@@ -96,10 +96,6 @@ VaultRoom a été conçu pour :
    ```
 
 4. **Accéder à l'application** :  
-   Ouvrez un navigateur et rendez-vous sur `https://localhost:5000`.  
+   Ouvrez un navigateur et rendez-vous sur `https://IP_DU_SERVER:80`.
+   Pour un port pareil vous serez amener à l'éxécuter en tant qu'admin. POur éviter cela, vous pouvez changer le numéro du port. 8443 par exemple (https://IP_DU_SERVER:8443)  
 
----
-
-## 📞 Contact  
-
-Pour toute question ou amélioration, n'hésitez pas à créer une issue ou à contacter l'équipe de développement.  
