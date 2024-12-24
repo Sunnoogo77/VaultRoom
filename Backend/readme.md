@@ -42,7 +42,7 @@ Prérequis
 Étapes
 	1.	Cloner le projet :
 
-git clone <URL_DU_REPO>
+git clone [<URL_DU_REPO>](https://github.com/Sunnoogo77/VaultRoom/)
 cd backend
 
 
