@@ -322,8 +322,46 @@
   to {transform: rotate(360deg);}
 }
 
-  /* FIn Button envoyer */ 
 
+  /* FIn Button envoyer */ 
+/* Button refresh */
+
+.buttonRfresh{
+  display:table-cell;
+  border-radius: 7px;
+  width: 12.38em;
+  height: 2.40em;  
+  padding: 0.20em;
+  border: 0.16em solid #4c659b;
+  vertical-align: middle;
+  font-family: arial, helvetica, sans-serif;
+  font-size: medium;
+  
+  text-decoration: none;
+  text-align: center;
+  transition: 0.35s ease-in-out;
+  outline:0;
+
+  margin-top: 47px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  border: none;
+  border-radius: 15px;
+  color: #fff;
+  background-color: #7095a0;
+  cursor: pointer;
+}
+
+.buttonRfresh:hover,
+.buttonRfresh:active{
+  border-color: #fff;
+  background-color: rgb(35, 194, 202);
+  outline:0;
+}
+
+/*FIn btnRefresh*/
 
   /*****************Debut pour CSS utilisateur de coté ********************/
   .container {
@@ -353,12 +391,12 @@
     padding: 10px;
   }
   
-  /* .message-form {
-    display: flex;
-    gap: 10px;
+  .message-form {
+    
     margin-top: 10px;
+    width: 80%;
   }
-   */
+  
   /* textarea {
     flex: 1;
     resize: none;
