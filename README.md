@@ -97,5 +97,5 @@ VaultRoom a été créé pour :
 
 3. **Exécution** :  
    ```bash
-   python app.py
+   python3 app.py
    ``` 
