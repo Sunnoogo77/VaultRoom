@@ -88,7 +88,7 @@ VaultRoom a été créé pour :
 
 2. **Installation** :  
    ```bash
-   git clone https://github.com/username/vaultroom.git
+   https://github.com/Sunnoogo77/VaultRoom.git
    cd vaultroom
    python -m venv env
    source env/bin/activate  # Sous Windows : env\Scripts\activate
