@@ -50,5 +50,5 @@ if __name__ == "__main__":
         db.create_all()
 
     #Lancer le serveur via https
-    socketio.run(app, debug=True, host="0.0.0.0", port=80, ssl_context=(CERT_FILE, KEY_FILE))  # Utilisation de socketio.run au lieu de app.run
+    socketio.run(app, debug=True, host="0.0.0.0", port=8080, ssl_context=(CERT_FILE, KEY_FILE))  # Utilisation de socketio.run au lieu de app.run
 
