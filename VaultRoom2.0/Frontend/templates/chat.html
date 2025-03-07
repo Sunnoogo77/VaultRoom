@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="display: flex; height: 100vh; width: 95%;">
+  <!-- Panneau latéral pour la liste des utilisateurs -->
+  <div style="margin-left:-50px;padding-right: 30px; width: 25%; background-color: #f7f7f7; border-right: 1px solid #ddd; overflow-y: auto;">
+    <div class="user-show">
+      <h3>  CHATS !! </h3>
+      <ul class="user-list" style="list-style-type: none; padding: 20px;">
+        <!-- Les utilisateurs seront chargés dynamiquement ici -->
+      </ul>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1; padding: 20px; margin-left: 10px;">
+    <div class="chat-header">
+      <button onclick="window.location.href='/dashboard';" class="back-button">Retour au Dashboard</button>
+      <h2 style="margin-top: -20px;">---- {{ recipient.username }} ---- </h2>
+    </div>
+    <div class="chat-container">
+    
+      <!-- Zone des messages -->
+      <div class="message-box" id="messages">
+        <!-- Les messages seront chargés dynamiquement -->
+      </div>
+    
+      <!-- Champ pour envoyer un message -->
+       <div style="display: flex; margin-left: 110px;">
+        <button class="buttonRfresh" onclick="refreshPage()"><b>-- REFRESH --</b></button>
+        <form id="message-form" action="/send-message" method="POST" class="message-form" autocomplete="off">
+          <input type="hidden" id="recipient_id" name="recipient_id" value="{{ recipient.id }}">
+          <div style="display: flex;"> 
+            <textarea id="message-input" class="message-input" name="message" placeholder="Écrivez votre message ici..." required></textarea>
+            <button id="send_button" type="submit">
+              <svg id="send_button_icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="12">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+              </svg>
+              <svg id="done_button_icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="opacity: 0;" width="0">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span id="button_text">Send</span>
+            </button>
+          </div>
+        </form>
+       </div>
+      
+    </div>
+  </div>
+</div>
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Charger les utilisateurs connectés
+    fetch('/get-users')
+      .then(response => response.json())
+      .then(users => {
+        const userList = document.querySelector('.user-list'); // Cibler la liste des utilisateurs
+        userList.innerHTML = ''; // Réinitialiser la liste avant d'ajouter des utilisateurs
+        users.forEach(user => {
+          const li = document.createElement('li');
+          li.style.margin = '10px 0';
+          li.innerHTML = `
+            <a href="/chat?user_id=${user.id}" class="chat-link" style="text-decoration: none; color: #333;">
+              <div class="user-item2">
+                ${user.username}
+              </div>
+            </a>
+          `;
+          userList.appendChild(li);
+        });
+      })
+      .catch(err => console.error('Erreur lors du chargement des utilisateurs:', err));
+
+    // Charger les messages pour la discussion actuelle
+    const recipient_id = document.getElementById('recipient_id').value;
+    fetch(`/get-messages?receiver_id=${recipient_id}`)
+      .then(response => response.json())
+      .then(messages => {
+        if (!Array.isArray(messages)) {
+          console.error("Erreur lors du chargement des messages: La réponse n'est pas un tableau", messages);
+          return;
+        }
+
+        const messageBox = document.getElementById("messages");
+        messages.forEach(msg => {
+          const messageDiv = document.createElement("div");
+          messageDiv.classList.add("message", msg.sender === "Moi" ? "sent" : "received");
+          messageDiv.innerHTML = `
+            <p style="margin: 0;">
+              <strong>${msg.sender}</strong>: ${msg.content}
+            </p>
+            <span style="font-size: 0.8em; color: #888;">${msg.timestamp}</span>
+          `;
+          messageBox.appendChild(messageDiv);
+        });
+
+        // Scroller vers le bas
+        messageBox.scrollTop = messageBox.scrollHeight;
+      })
+      .catch(error => console.error("Erreur lors du chargement des messages:", error));
+  });
+
+  // Envoi des messages
+  const form = document.getElementById("message-form");
+  form.onsubmit = (e) => {
+    e.preventDefault();
+
+    const messageInput = document.getElementById("message-input");
+    const recipient_id = document.getElementById("recipient_id").value;
+    const message = messageInput.value.trim();
+
+    if (!message || !recipient_id) {
+      console.error("Les données du formulaire sont incomplètes.");
+      return;
+    }
+
+    // Envoyer le message au backend
+    fetch(`/send-message`, {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ recipient_id, message })
+    }).then(response => {
+      if (!response.ok) {
+        throw new Error("Erreur lors de l'envoi du message.");
+      }
+      return response.json();
+    }).then(() => {
+      location.reload(); // Recharger pour voir les nouveaux messages
+    }).catch(err => console.error("Erreur lors de l'envoi du message:", err));
+  };
+
+  function refreshPage(){
+    location.reload();
+  }
+</script>
+{% endblock %}

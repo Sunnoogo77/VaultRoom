@@ -1,0 +1,534 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="display: flex;">
+  <div style="margin-left: 0.5%; margin-right: 1.5%; padding-right: 3%;">
+    <div class="dashboard-container1">
+      <h2>CHAT!!</h2>
+    
+      <!-- Liste des utilisateurs -->
+      <div class="user-list">
+        <h3>Utilisateurs connectés</h3>
+        <ul>
+          {% for user in users %}
+            <a href="/chat?user_id={{ user.id }}" class="chat-link">
+              <div class="user-item">
+                {{ user.username }}
+              </div>
+            </a>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="chat-container">
+      <h2>Discussion avec {{ recipient.username }}</h2>
+    
+      <!-- Zone des messages -->
+      <div class="message-box" id="messages">
+        <!-- Les messages seront chargés dynamiquement -->
+      </div>
+    
+      <!-- Champ pour envoyer un message -->
+      <!--form id="message-form" action="/send-message" method="POST" class="message-form" autocomplete="off"-->
+      <form id="message-form" class="message-form" autocomplete="off">
+        <input type="hidden" id="recipient_id" name="recipient_id" value="{{ recipient.id }}">
+        <div style="display: flex;">
+          <textarea id="message-input" class="message-input" name="message" placeholder="Écrivez votre message ici..." required></textarea>
+          <button id="send_button" type="submit">
+            <svg id="send_button_icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" width="12">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+            </svg>
+            <svg id="done_button_icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="opacity: 0;" width="0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span id="button_text">Send</span>
+        </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+<script>
+  
+  const socket = io.connect(); 
+  const recipient_id = document.getElementById('recipient_id').value;
+
+  socket.emit('join_room', {recipient_id });
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    
+    fetch(`/get-messages?receiver_id=${recipient_id}`)
+      .then(response => response.json())
+      .then(messages => {
+        if (!Array.isArray(messages)) {
+          console.error("Erreur lors du chargement des messages: La réponse n'est pas un tableau", messages);
+          return;
+        }
+
+        //CHargements des messages depuis la DB
+        const messageBox = document.getElementById("messages");
+        messages.forEach(msg => {
+          const messageDiv = document.createElement("div");
+          messageDiv.classList.add("message", msg.sender === "Moi" ? "sent" : "received");
+          messageDiv.innerHTML = `
+            <p class="content">
+              <!--strong>${msg.sender}</strong-->
+              ${msg.content}
+            </p>
+            <span class="timestamp">${msg.timestamp}</span>
+          `;
+          messageBox.appendChild(messageDiv);
+        });
+
+        // Scroller vers le bas
+        messageBox.scrollTop = messageBox.scrollHeight;
+      })
+      .catch(error => {
+        console.error("Erreur lors du chargement des messages:", error);
+      });
+  });
+
+  //Rejoindre la room dédiée à l'utilisateur connecté ... 
+  
+
+  //Envoyer le message via WebSocket
+  // const form = 
+  document.getElementById("message-form").onsubmit = (e) => {
+    //e.preventDefault();
+    const message = document.getElementById("message-input").value;
+  //   const message = messageInput.value.trim();
+
+    if (!message || !recipient_id) return;
+    // ---------------
+
+  //   //Envoie du message via WebSocket
+    socket.emit('send-message', { message, recipient_id });
+
+    //réinitialiser les champs saisi 
+    document.getElementById('message-input').value ='';
+  };
+
+  //Ecouter les message reçu via WebSocket
+  socket.on('receive_message', (data) => {
+    const messageBox = documentget.getElementById("messages");
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("message", "received");
+    messageDiv.innerHTML = `
+      <p>${data.content}</p>
+      <span class="timestamp">${data.timestamp}</span>
+    `; 
+    messageBox.appendChild(messageDiv);
+    messageBox.scrollTop = messageBox.scrollHeight;
+  });
+
+  
+
+
+  // const socket = io.connect();
+  //   // Fonction pour envoyer un message via WebSocket
+  // const form = document.getElementById("message-form");
+  // form.onsubmit = (e) => {
+  //   e.preventDefault();
+
+  //   const messageInput = document.getElementById("message-input");
+  //   const message = messageInput.value;
+
+  //   if (!message || !recipient_id) {
+  //     console.error("Les données du formulaire sont incomplètes.");
+  //     return;
+  //   }
+
+  //     // Envoyer le message via WebSocket
+  //   socket.emit('send_message', { message, recipient_id });
+  //   console.log("Message envoyé :", { message, recipient_id });
+  //   messageInput.value= '';
+
+  //   messageInput.value = ''; // Réinitialiser le champ
+  // };
+
+  // // Écouter les messages reçus en temps réel
+  // socket.on('receive_message', (data) => {
+  //   const messageBox = document.getElementById("messages");
+  //   const messageDiv = document.createElement("div");
+  //   messageDiv.classList.add("message", "received");
+  //   messageDiv.innerHTML = `
+  //     <p><strong>${data.sender}</strong>: ${data.content}</p>
+  //     <span class="timestamp">${data.timestamp}</span>
+  //   `;
+  //   messageBox.appendChild(messageDiv);
+  //   messageBox.scrollTop = messageBox.scrollHeight;
+  // });
+
+  
+</script>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------------
+
+
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for, session
+from flask_socketio import emit, join_room, leave_room
+from extensions import db, bcrypt
+from models import User, Message
+from socketio_instance import socketio
+
+main = Blueprint(
+    "main",
+    __name__,
+    template_folder="../Frontend/templates",
+    static_folder="../Frontend/static")
+
+
+@main.route('/login-page')
+def login_page():
+    return render_template('login.html')
+
+@main.route('/register-page')
+def register_page():
+    return render_template('register.html')
+
+
+@main.route("/")
+def home():
+    return render_template('home.html')
+
+# API pour l'enregistrement
+@main.route('/register', methods=['POST'])
+def register():
+    #data = request.json
+    # Vérifier si la requête contient du JSON
+    if request.is_json:
+        data = request.get_json()
+    else:
+        # Gérer les données envoyées en `x-www-form-urlencoded`
+        data = request.form.to_dict()
+
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
+
+    if not username or not email or not password:
+        return jsonify({'error': 'Tous les champs sont requis.'}), 400
+
+    # Vérifier si l'utilisateur existe déjà
+    #if User.query.filter_by(username=username).first():
+     #   return jsonify({'error': 'Nom d’utilisateur déjà pris.'}), 400
+    #if User.query.filter_by(email=email).first():
+     #   return jsonify({'error': 'Email déjà utilisé.'}), 400
+
+    try:
+        if User.query.filter_by(username=username).first():
+            return jsonify({'error': 'Nom d’utilisateur déjà pris.'}), 400
+    except Exception as e:
+        return jsonify({'error': 'Erreur de connexion à la base de données.', 'details': str(e)}), 500
+
+    # Hacher le mot de passe
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+    new_user = User(username=username, email=email, password=hashed_password)
+
+    db.session.add(new_user)
+    db.session.commit()
+    return render_template('home.html')
+
+# API pour la connexion
+@main.route('/login', methods=['POST'])
+def login():
+    try:
+        # 1. Récupérer les données envoyées par le client
+        #data = request.json
+        
+        if request.is_json:
+            data = request.get_json()
+        else:
+            # Gérer les données envoyées en `x-www-form-urlencoded`
+            data = request.form.to_dict()
+
+        username = data.get('username')
+        password = data.get('password')
+
+        # 2. Vérification des champs
+        if not username or not password:
+            return jsonify({'error': 'Tous les champs sont requis.'}), 400
+
+        # 3. Rechercher l'utilisateur dans la base de données
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return jsonify({'error': 'Nom d’utilisateur incorrect.'}), 401
+
+        # 4. Vérifier le mot de passe
+        if not bcrypt.check_password_hash(user.password, password):
+            return jsonify({'error': 'Mot de passe incorrect.'}), 401
+        
+        # Enregistrement des informations dans la session
+        session['user_id'] = user.id
+        session['username'] = user.username
+
+        # 5. Retourner une réponse si tout est OK
+        #return jsonify({'message': f'Bienvenue {user.username} !'}), 200
+
+        #Si la connexion est réussi, rediriger vers le Dashboard
+        return redirect(url_for('main.dashboard'))
+        
+
+    except Exception as e:
+        # Gestion des erreurs inattendues
+        return jsonify({'error': 'Erreur interne.', 'details': str(e)}), 500
+    
+
+#-----------------------------------
+@socketio.on('send_message')
+def handle_send_message(data):
+    try:
+        sender_id = session.get('user_id')  # ID de l'utilisateur connecté
+        content = data.get('message')
+        receiver_id = data.get('recipient_id')
+
+        if not sender_id or not receiver_id or not content:
+            emit('error', {'error': 'Données incomplètes pour envoyer un message.'}, room=request.sid)
+            return
+
+        # Vérifier que le destinataire existe
+        recipient = User.query.get(receiver_id)
+        if not recipient:
+            emit('error', {'error': 'Destinataire introuvable.'}, room=request.sid)
+            return
+
+        # Générer la room pour cette discussion
+        room_name = f"{min(sender_id, receiver_id)}-{max(sender_id, receiver_id)}"
+
+        # Ajouter le message dans la base de données
+        new_message = Message(sender_id=sender_id, receiver_id=receiver_id, room=room_name, content=content)
+        db.session.add(new_message)
+        db.session.commit()
+
+        print("Message enregistré dans la base de données.")
+
+        # Émettre le message en temps réel à la room
+        emit('receive_message', {
+            'sender': session['username'],
+            'content': content,
+            'timestamp': new_message.timestamp.strftime('%d/%m/%Y %H:%M:%S')
+        }, room=room_name)
+
+        # Informer l'expéditeur que le message a été envoyé avec succès
+        emit('message_sent', {'status': 'success', 'content': content}, room=request.sid)
+
+    except Exception as e:
+        emit('error', {'error': f'Erreur lors de l\'envoi du message : {str(e)}'}, room=request.sid)
+ 
+# # Route pour envoyer un message via WebSocket
+# @socketio.on('send_message')
+# def handle_send_message(data):
+#     try:
+#         sender_id = session.get('user_id')  # ID de l'utilisateur connecté
+#         content = data.get('message')
+#         receiver_id = data.get('recipient_id')
+        
+
+#         if not sender_id or not receiver_id or not content:
+#             emit('error', {'error': 'Données incomplètes pour envoyer un message.'}, room=request.sid)
+#             return
+
+#         # Vérifier que le destinataire existe
+#         recipient = User.query.get(receiver_id)
+#         if not recipient:
+#             emit('error', {'error': 'Destinataire introuvable.'}, room=request.sid)
+#             return
+
+#         # Ajouter le message dans la base de données
+#         #new_message=data
+#         new_message = Message(sender_id=sender_id, receiver_id=receiver_id, content=content)
+#         db.session.add(new_message)
+#         db.session.commit()
+
+#         print("Message enregistré dans la base de données.")
+#         print(data)
+#         #print(data.receiver_id)
+
+#         # Émettre le message en temps réel au destinataire
+#         emit('receive_message', {
+#             'sender': session['username'],
+#             'content': content,
+#             'timestamp': new_message.timestamp.strftime('%d/%m/%Y %H:%M:%S')
+#         }, room=str(receiver_id))
+
+#         # Informer l'expéditeur que le message a été envoyé avec succès
+#         emit('message_sent', {'status': 'success', 'content': content}, room=request.sid)
+#         print( "Message envoyer")
+#     except Exception as e:
+#         emit('error', {'error': f'Erreur lors de l\'envoi du message : {str(e)}'}, room=request.sid)
+
+
+# @main.route('/send-message', methods=['POST'])
+# def send_message():
+#     if 'user_id' not in session:
+#         return jsonify({'error': 'Vous devez être connecté pour envoyer un message.'}), 401
+
+#     sender_id = session['user_id']
+#     receiver_id = request.form.get('recipient_id')
+#     content = request.form.get('message')
+
+#     # Vérifier les champs
+#     if not receiver_id or not content:
+#         return jsonify({'error': 'Tous les champs sont requis.'}), 400
+
+#     try:
+#         # Vérifier si le destinataire existe
+#         recipient = User.query.get(receiver_id)
+#         if not recipient:
+#             return jsonify({'error': 'Destinataire introuvable.'}), 404
+
+#         # Enregistrer le message dans la base de données
+#         new_message = Message(sender_id=sender_id, receiver_id=receiver_id, content=content)
+#         db.session.add(new_message)
+#         db.session.commit()
+
+#         print("Message enregistré dans la base de données.")
+#         print(new_message.content)
+#         print(new_message.receiver_id)
+
+#         data = {new_message.content, new_message.receiver_id}
+
+#         #handle_send_message(data)
+
+#         # Rediriger vers la même page (rafraîchissement)
+#         return redirect(url_for('main.chat', user_id=receiver_id))
+#         #return handle_send_message(data)
+    
+#     except Exception as e:
+#         print(f"Erreur : {e}")
+#         return jsonify({'error': 'Erreur lors de l\'enregistrement du message.'}), 500
+    
+
+#Joinning Chat
+@socketio.on('join_room')
+def handle_join_chat(data):
+    # 1. Obtenir l'ID de l'utilisateur connecté
+    user_id = session.get('user_id')
+    recipient_id = data.get('recipient_id')
+
+    
+    print (recipient_id)
+    # 2. Vérifier que l'utilisateur est bien authentifié
+    if user_id and recipient_id:
+
+        room_name = f"{min(user_id, recipient_id)}-{max(user_id, recipient_id)}"
+
+        # 3. Ajouter l'utilisateur à une room dédiée (son user_id)
+        join_room(room_name)
+        
+        # 4. Informer les autres (ou le système) qu'il a rejoint la room
+        emit('info', {'message': f'{session["username"]} a rejoint la discussion.'}, room=room_name)
+    else:
+        emit('error', {'error': 'Impossible de rejoindre la discussion. Identifiant manquants'}, room=request)
+
+# Route pour rejoindre une discussion
+@main.route('/get-messages', methods=['GET'])
+def get_messages():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Vous devez être connecté pour voir les messages.'}), 401
+
+    sender_id = session['user_id']
+    receiver_id = request.args.get('receiver_id')
+
+    if not receiver_id:
+        return jsonify({'error': 'Aucun destinataire spécifié.'}), 400
+
+    try:
+        # Récupérer tous les messages envoyés et reçus dans une seule requête
+        all_messages = Message.query.filter(
+            ((Message.sender_id == sender_id) & (Message.receiver_id == receiver_id)) |
+            ((Message.sender_id == receiver_id) & (Message.receiver_id == sender_id))
+        ).order_by(Message.timestamp.asc()).all()
+
+        # Formater les messages pour le JSON
+        messages_json = [{
+            'sender': 'Moi' if msg.sender_id == sender_id else User.query.get(msg.sender_id).username,
+            'content': msg.content,
+            'timestamp': msg.timestamp.strftime('%d/%m %H:%M') #'timestamp': msg.timestamp.strftime('%d/%m/%Y %H:%M:%S')
+        } for msg in all_messages]
+
+        return jsonify(messages_json), 200
+
+    except Exception as e:
+        return jsonify({'error': 'Erreur lors de la récupération des messages.', 'details': str(e)}), 500
+    
+# Route pour afficher la page de discussion
+@main.route('/chat', methods=['GET'])
+def chat():
+    current_user_id = session.get('user_id')
+    if not current_user_id:
+        return jsonify({"error": "Utilisateur non authentifié"}), 401
+
+    # Récupérer l'ID du destinataire à partir des paramètres de l'URL
+    recipient_id = request.args.get('user_id')  # Cela doit correspondre à l'URL
+    print(f"Recipient ID: {recipient_id}")  # DEBUG: Afficher l'ID du destinataire
+
+    if not recipient_id:
+        return jsonify({"error": "Aucun destinataire spécifié."}), 400
+
+    # Vérifier si l'utilisateur existe dans la base de données
+    recipient = User.query.get(recipient_id)
+    print(f"Recipient Object: {recipient}")  # DEBUG: Afficher les détails de l'utilisateur
+
+    if not recipient:
+        return jsonify({"error": "Utilisateur non trouvé"}), 404
+
+    user = {
+        "id": current_user_id,
+        "username": session.get('username')
+    }
+    return render_template('chat.html', recipient=recipient, user=user)
+#route pour afficher Dashboard
+@main.route('/dashboard')
+def dashboard():
+    try:
+        #Vérifie si l'utilisateur est connecter
+        if 'user_id' not in session:
+            return redirect(url_for('main.login_page'))  # Redirige vers login si pas connecté
+        # Exemple d'utilisateur connecté (remplacez ceci par l'authentification réelle)
+        current_user = {
+            "id": session['user_id'],
+            "username": session['username']}  
+
+        # Récupérer tous les utilisateurs dans la base de données
+        users = User.query.filter(User.username != current_user['username']).all()
+        
+        return render_template('dashboard.html', users=users, user=current_user)
+    except Exception as e:
+        return jsonify({"error": "Erreur lors du chargement des utilisateurs", "details": str(e)})
+
+
+@main.route("/test-db")
+def test_db():
+    try:
+        users = User.query.all()  # Tente de récupérer tous les utilisateurs
+        return jsonify({"message": f"{len(users)} utilisateurs trouvés.", "status": "success"})
+    except Exception as e:
+        return jsonify({"message": str(e), "status": "error"})
+
+@main.errorhandler(404)
+def page_not_found(e):
+    return render_template('error.html', message="Page non trouvée."), 404
+
+@main.errorhandler(500)
+def internal_server_error(e):
+    return render_template('error.html', message="Erreur interne du serveur."), 500
+

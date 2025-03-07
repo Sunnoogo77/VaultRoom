@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="dashboard-container">
+  <h2>Bienvenue, {{ user.username }} !</h2>
+
+    
+    <!-- Liste des utilisateurs (colonne gauche) -->
+    <h3>Utilisateurs connectés</h3>
+    <div class="user-list1">
+      
+      
+        {% for user in users %}
+          <a href="/chat?user_id={{ user.id }}" class="chat-link">
+            <div class="user-item">
+              {{ user.username }}
+            </div>
+          </a>
+        {% endfor %}
+      
+    </div>
+</div>
+{% endblock %}
